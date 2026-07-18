@@ -1,0 +1,75 @@
+name: Draft release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure MSBuild
+        uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2
+
+      - name: Build and test
+        shell: powershell
+        run: .\scripts\test.ps1 -CI
+
+      - name: Assemble versioned assets
+        id: package
+        shell: powershell
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          $releaseDir = "artifacts/release"
+          New-Item -ItemType Directory -Path $releaseDir -Force | Out-Null
+          $exeName = "CodexEdgeGlow-$version-win-x64.exe"
+          Copy-Item "artifacts/bin/Release/codex-edge-glow.exe" "$releaseDir/$exeName"
+          $zipRoot = "$releaseDir/portable"
+          New-Item -ItemType Directory -Path $zipRoot -Force | Out-Null
+          Copy-Item "$releaseDir/$exeName" "$zipRoot/codex-edge-glow.exe"
+          Copy-Item README.md, CHANGELOG.md, LICENSE $zipRoot
+          Compress-Archive -Path "$zipRoot/*" -DestinationPath "$releaseDir/CodexEdgeGlow-$version-portable.zip"
+          Get-ChildItem $releaseDir -File | Where-Object Name -ne 'SHA256SUMS.txt' | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$hash  $($_.Name)"
+          } | Set-Content "$releaseDir/SHA256SUMS.txt" -Encoding ascii
+          "exe=$releaseDir/$exeName" >> $env:GITHUB_OUTPUT
+          "zip=$releaseDir/CodexEdgeGlow-$version-portable.zip" >> $env:GITHUB_OUTPUT
+
+      - name: Attest executable
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        with:
+          subject-path: ${{ steps.package.outputs.exe }}
+
+      - name: Attest portable archive
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        with:
+          subject-path: ${{ steps.package.outputs.zip }}
+
+      - name: Create draft GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: powershell
+        run: |
+          $assets = Get-ChildItem "artifacts/release" -File | ForEach-Object { $_.FullName }
+          $arguments = @(
+            "release", "create", "${{ github.ref_name }}",
+            "--draft",
+            "--verify-tag",
+            "--generate-notes",
+            "--title", "Codex Edge Glow ${{ github.ref_name }}"
+          ) + $assets
+          & gh @arguments

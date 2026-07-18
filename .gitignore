@@ -1,0 +1,25 @@
+# Build output
+artifacts/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+
+# Local runtime data
+*.log
+*.tmp
+*.bak
+settings.xml
+
+# Binaries are distributed through GitHub Releases
+*.exe
+*.pdb
+*.zip
+!assets/*.ico
+

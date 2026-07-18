@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and setup help
+    url: https://github.com/ajhcs/codex-edge-glow/discussions/categories/q-a
+    about: Ask installation, configuration, and compatibility questions in Discussions.
+  - name: Ideas and early concepts
+    url: https://github.com/ajhcs/codex-edge-glow/discussions/categories/ideas
+    about: Explore larger experience ideas before turning them into scoped work.
+  - name: Private security report
+    url: https://github.com/ajhcs/codex-edge-glow/security/advisories/new
+    about: Report vulnerabilities privately; do not disclose unpatched issues in public.
+

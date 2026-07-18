@@ -1,0 +1,113 @@
+name: Bug report
+description: Report reproducible behavior in the renderer, island, settings, integration, or packaging.
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Codex Edge Glow. Remove task text, usernames, folder paths, credentials, and unrelated desktop content from every attachment.
+
+  - type: input
+    id: version
+    attributes:
+      label: App version and download source
+      description: Include the version and whether it came from this repository's Releases page or a source build.
+      placeholder: "0.1.0 from GitHub Releases"
+    validations:
+      required: true
+
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2, build 26100, x64"
+    validations:
+      required: true
+
+  - type: textarea
+    id: displays
+    attributes:
+      label: Display layout and scaling
+      description: List monitor count, resolution, orientation, physical position, and scaling percentage.
+      placeholder: "Primary: 3840×2160 at 150%; secondary: 2560×1440 at 100%, positioned left"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Edge lighting
+        - Completion island
+        - Settings or live preview
+        - Display calibration
+        - Codex notification integration
+        - Tray lifecycle
+        - Packaging or startup
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: settings
+    attributes:
+      label: Relevant settings
+      description: Include the pattern, island mode, thickness, duration, trail, and any per-display insets/radius that matter.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open settings...
+        2. Select...
+        3. Start live preview...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: dropdown
+    id: preview
+    attributes:
+      label: Does live preview reproduce it?
+      options:
+        - "Yes"
+        - "No"
+        - "Not applicable"
+        - "Not tested"
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized screenshots, recording, or logs
+      description: Drag files here. Include observed working-set memory if performance is involved.
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed private task text, usernames, folder paths, credentials, and unrelated desktop content.
+          required: true
+        - label: I searched existing issues and troubleshooting documentation.
+          required: true
+
