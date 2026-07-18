@@ -20,7 +20,12 @@ if (-not $msbuild) {
 }
 
 if ($msbuild) {
-    & $msbuild.FullName $project /restore /m /p:Configuration=$Configuration /p:Platform=AnyCPU
+    $msbuildPath = if ($msbuild -is [System.Management.Automation.CommandInfo]) {
+        $msbuild.Source
+    } else {
+        $msbuild.FullName
+    }
+    & $msbuildPath $project /restore /m /p:Configuration=$Configuration /p:Platform=AnyCPU
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 } else {
     $compiler = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
@@ -46,4 +51,3 @@ if (-not (Test-Path $binary)) { throw "Build completed without producing $binary
 $hash = (Get-FileHash -Algorithm SHA256 $binary).Hash
 Write-Host "Built $binary"
 Write-Host "SHA256 $hash"
-
